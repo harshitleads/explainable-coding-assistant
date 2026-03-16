@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Force dark theme — this is a developer tool, always dark */
+:root {
+  --bg-base: #0d1117;
+  --bg-panel: #161b22;
+  --bg-subtle: #1c2128;
+  --border: #30363d;
+  --border-subtle: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #7d8590;
+  --text-muted: #484f58;
+  --accent: #4493f8;
+  --green: #3fb950;
+  --yellow: #d29922;
+  --red: #f85149;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), -apple-system, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  height: 100%;
+  margin: 0;
+}
+
+/* Custom scrollbar for code panels */
+.code-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.code-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.code-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+.code-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
