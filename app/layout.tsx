@@ -30,7 +30,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Explainable AI — Should you accept this suggestion?",
+        alt: "Explainable AI: Should you accept this suggestion?",
       },
     ],
     url: "https://explainable-coding-assistant.vercel.app",
