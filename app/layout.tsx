@@ -18,12 +18,6 @@ export const metadata: Metadata = {
   title: "Explainable AI | Trust Through Transparency",
   description:
     "Paste your original code and the AI suggestion. Get back the rationale, tradeoffs, and what to verify before you accept.",
-  icons: {
-    icon: [
-      { url: "/favicon.png", type: "image/png" },
-      { url: "/favicon.ico", sizes: "any" },
-    ],
-  },
   openGraph: {
     title: "Explainable AI | Trust Through Transparency",
     description:
