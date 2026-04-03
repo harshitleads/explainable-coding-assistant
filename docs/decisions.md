@@ -20,3 +20,11 @@ Entries are append-only. Never edit old entries.
 **Decision:** Users can accept or discard suggestions with an undo option.
 **Why:** Reduces anxiety about trying the tool. If you accept and regret it, you can undo. Lowers the cost of engagement.
 **Rejected:** Accept only (irreversible, high friction), no accept/discard (passive tool with no action).
+
+### 2026-04-03
+
+### 2026-04-03 -- Git and file deletion guardrails in CLAUDE.md
+**Decision:** Added two code rules to CLAUDE.md: (1) Never run git commit, push, reset, or any git write commands. (2) Never delete files unless the task spec explicitly names the file. Default to rename or comment out.
+**Why:** With Cursor auto-run mode enabled, Claude Code executes without permission prompts. Without guardrails, a poorly scoped prompt could result in destructive commits or file deletions. These rules apply regardless of which chat generates the Cursor prompt.
+**Rejected:** Relying on Cursor's sandbox protection alone (tested: sandbox does not block file deletion), disabling auto-run (too much friction for daily workflow).
+
