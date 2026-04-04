@@ -4,7 +4,7 @@ An explainability layer for AI code suggestions. Paste your original code and an
 
 Target user: developers using Copilot or Cursor who either accept suggestions blindly or waste time manually verifying them.
 
-Live at: [explainable.harshit.ai](https://explainable.harshit.ai) (coming soon)
+Live at: [trust.harshit.ai](https://trust.harshit.ai)
 
 ## Stack
 
