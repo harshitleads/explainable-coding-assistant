@@ -1,29 +1,49 @@
 # Explainable Coding Assistant
 
-An explainability layer for AI code suggestions. Paste your original code and an AI suggestion. The tool returns why the approach was chosen, what tradeoffs exist, and what you need to verify before accepting.
+**AI code suggestions tell you what to write. This tool tells you why.**
 
-Target user: developers using Copilot or Cursor who either accept suggestions blindly or waste time manually verifying them.
+Developers using Copilot and Cursor face the same problem: they get a code suggestion, and they either accept it blindly or spend time manually verifying it. Neither is good. Blind acceptance introduces bugs and technical debt. Manual verification defeats the purpose of AI assistance.
 
-Live at: [trust.harshit.ai](https://trust.harshit.ai)
+Explainable Coding Assistant is a three-panel web app that surfaces the reasoning behind AI code suggestions. Paste your original code and a suggestion. The tool returns why the approach was chosen, what assumptions it encodes, what tradeoffs exist, and what you need to verify before accepting.
+
+**Live:** [trust.harshit.ai](https://trust.harshit.ai)
+
+---
+
+## Why I built this
+
+Every AI coding tool optimizes for speed of generation. None optimize for developer understanding. The result is a trust problem: senior developers distrust suggestions they can't verify quickly, and junior developers trust suggestions they shouldn't.
+
+I built this to explore what it would look like to make explainability a first-class feature of AI coding tools, not an afterthought. The core insight: if you can't explain why a suggestion was made, you can't evaluate whether it's right for your codebase.
+
+---
+
+## How it works
+
+1. Paste your original code in the left panel
+2. Paste the AI-generated suggestion in the center panel
+3. The tool sends both to Claude with a structured prompt
+4. Five reasoning sections appear in the right panel: approach rationale, assumption mapping, tradeoff analysis, confidence score, and verification checklist
+5. Accept or discard the suggestion with full context
+
+## Design decisions worth noting
+
+**Three-panel layout over chat interface.** The core value is side-by-side comparison of original code, suggestion, and reasoning. A chat interface buries the comparison. Three panels keep everything visible simultaneously.
+
+**Confidence score is LLM pattern matching, not measurement.** This is a documented honest limitation. The confidence score reflects Claude's assessment of its own suggestion, not a grounded metric against your actual codebase. Acknowledging this explicitly signals product maturity.
+
+**Web app over VS Code extension for V1.** A VS Code extension would be the right long-term form factor, but it adds weeks of scope (extension API, marketplace publishing, editor integration). Validating the core concept in a web app first is the right sequencing.
+
+**Server-side API route, not client-side calls.** Claude API calls go through a Next.js API route to keep the Anthropic API key secure. No key is exposed to the browser.
 
 ## Stack
 
 - Next.js (App Router), TypeScript, Tailwind CSS
-- Anthropic SDK (claude-sonnet-4-6)
-- Deployed on Vercel (requires ANTHROPIC_API_KEY env var)
-- No auth, fully public
+- Anthropic SDK (Claude Sonnet)
+- Deployed on Vercel
+- No auth, no database, fully public
 
-## Structure
-
-- `app/page.tsx` — state machine (input, loading, result, error)
-- `app/api/explain/route.ts` — Claude API route, server-side
-- `components/InputScreen.tsx` — input form with two code textareas
-- `components/ResultLayout.tsx` — three-panel wrapper
-- `components/CodePanel.tsx` — center panel with Accept/Discard
-- `components/ReasoningPanel.tsx` — five AI reasoning sections
-- `docs/decisions.md` — product and technical decision log
-
-## Running Locally
+## Local development
 
 ```bash
 pnpm install
@@ -32,8 +52,12 @@ pnpm dev
 
 Add `ANTHROPIC_API_KEY` to `.env.local` before running.
 
-## Repo Files
+## Repo files
 
-**CLAUDE.md** — technical context for Claude Code. Stack, architecture, code rules, and a log of technical decisions. Read automatically by Cursor at session start.
+**CLAUDE.md** -- technical context for Claude Code. Stack, architecture, code rules, and a log of technical decisions.
 
-**docs/decisions.md** — product decision log. Why certain decisions were made, what tradeoffs were accepted, what alternatives were rejected. Useful for PMs and engineers reviewing the work.
+**docs/decisions.md** -- product decision log. Why certain decisions were made, what tradeoffs were accepted, what alternatives were rejected.
+
+---
+
+Built by [Harshit Sharma](https://harshit.ai).
