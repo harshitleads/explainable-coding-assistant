@@ -18,9 +18,9 @@ export default function ReasoningPanel({ analysis }: Props) {
       style={{
         background: "var(--bg-panel)",
         borderLeft: "1px solid var(--border)",
-        width: "320px",
-        minWidth: "280px",
-        maxWidth: "360px",
+        width: "400px",
+        minWidth: "360px",
+        maxWidth: "440px",
       }}
     >
       {/* Panel header */}
@@ -36,7 +36,7 @@ export default function ReasoningPanel({ analysis }: Props) {
 
       {/* Confidence score — hero section */}
       <div
-        className="mx-4 mt-4 mb-2 rounded-lg p-4 shrink-0"
+        className="mx-4 mt-4 mb-2 rounded-lg p-6 shrink-0 text-center"
         style={{ background: bgColor, border: `1px solid ${color}25` }}
       >
         <div className="flex items-center justify-between mb-1">
@@ -51,7 +51,7 @@ export default function ReasoningPanel({ analysis }: Props) {
 
         {/* Score number */}
         <div className="flex items-baseline gap-2 mt-1">
-          <span className="text-3xl font-bold tracking-tight" style={{ color }}>
+          <span className="text-5xl font-bold tracking-tight" style={{ color }}>
             {analysis.confidence}%
           </span>
           <span className="text-sm font-medium" style={{ color }}>
@@ -61,7 +61,7 @@ export default function ReasoningPanel({ analysis }: Props) {
 
         {/* Progress bar */}
         <div
-          className="mt-3 h-1.5 rounded-full overflow-hidden"
+          className="mt-3 h-2.5 rounded-full overflow-hidden"
           style={{ background: "rgba(255,255,255,0.08)" }}
         >
           <div
@@ -75,7 +75,7 @@ export default function ReasoningPanel({ analysis }: Props) {
       </div>
 
       {/* Five sections */}
-      <div className="flex flex-col gap-0 flex-1 pb-4">
+      <div className="flex flex-col gap-1 flex-1 pb-4">
         <Section
           title="Why this change"
           icon={<WhyIcon />}

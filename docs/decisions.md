@@ -28,3 +28,16 @@ Entries are append-only. Never edit old entries.
 **Why:** With Cursor auto-run mode enabled, Claude Code executes without permission prompts. Without guardrails, a poorly scoped prompt could result in destructive commits or file deletions. These rules apply regardless of which chat generates the Cursor prompt.
 **Rejected:** Relying on Cursor's sandbox protection alone (tested: sandbox does not block file deletion), disabling auto-run (too much friction for daily workflow).
 
+
+### 2026-04-05
+
+### 2026-04-04 -- Remove FilePanel from result layout
+**Decision:** Remove the left FilePanel (fake file explorer) from the result screen. Go from three panels to two: CodePanel + ReasoningPanel.
+**Why:** FilePanel is decorative filler that wastes screen space in a browser context. The ReasoningPanel (the actual product) needs more room. Wider reasoning panel + larger confidence score = stronger demo impression.
+**Rejected:** Keeping FilePanel but collapsing it. Not worth the complexity for a decorative element.
+
+### 2026-04-04 -- Enlarge confidence score
+**Decision:** Increase confidence score from text-3xl to text-5xl, thicken progress bar from h-1.5 to h-2.5, add more padding to confidence container.
+**Why:** The confidence score is the hero metric of this product. It should be the first thing someone sees. Current size doesn't dominate enough at the wider panel width.
+**Rejected:** Moving confidence score to a separate top banner. Keeps it in the reasoning panel where context is collocated.
+

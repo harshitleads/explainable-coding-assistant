@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import type { Analysis, Decision, UserInput } from "@/types";
-import FilePanel from "./FilePanel";
 import CodePanel from "./CodePanel";
 import ReasoningPanel from "./ReasoningPanel";
 
@@ -12,8 +11,8 @@ interface Props {
   onReset: () => void;
 }
 
-// Three-panel result layout.
-// FilePanel (left) | CodePanel (center) | ReasoningPanel (right)
+// Two-panel result layout.
+// CodePanel (left) | ReasoningPanel (right)
 export default function ResultLayout({ input, analysis, onReset }: Props) {
   const [decision, setDecision] = useState<Decision>("pending");
 
@@ -55,9 +54,8 @@ export default function ResultLayout({ input, analysis, onReset }: Props) {
         </button>
       </header>
 
-      {/* Three-panel body */}
+      {/* Two-panel body */}
       <div className="flex flex-1 overflow-hidden">
-        <FilePanel input={input} />
         <CodePanel
           originalCode={input.originalCode}
           aiSuggestion={input.aiSuggestion}
