@@ -44,5 +44,3 @@ next-env.d.ts
 .claude/
 .cursor/
 AGENTS.md
-.claude/
-.cursor/
