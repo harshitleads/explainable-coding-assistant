@@ -41,3 +41,8 @@ Entries are append-only. Never edit old entries.
 **Why:** The confidence score is the hero metric of this product. It should be the first thing someone sees. Current size doesn't dominate enough at the wider panel width.
 **Rejected:** Moving confidence score to a separate top banner. Keeps it in the reasoning panel where context is collocated.
 
+### 2026-04-10 -- Add floating case study bubble
+**Decision:** Added a floating CaseStudyBubble component (bottom-right) linking to harshit.ai/work/explainable-ai. Appears after 3s on all screens (input, loading, result, error), reappears 7s after dismissal. Mobile styles stretch it to full width via a globals.css media query.
+**Why:** Portfolio sub-sites need a consistent way to surface the case study behind the product. Same pattern as Eval Studio. Helps hiring managers and recruiters discover the product thinking.
+**Rejected:** Static footer link (too easy to miss), modal on load (too intrusive).
+

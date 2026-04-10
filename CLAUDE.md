@@ -6,17 +6,17 @@ An explainability layer for AI code suggestions. Developers paste their original
 ## Current Stack
 - Next.js (App Router), TypeScript, Tailwind CSS
 - Anthropic SDK (claude-sonnet-4-6)
-- Deployed on Vercel (requires ANTHROPIC_API_KEY env var)
+- Deployed on Vercel at trust.harshit.ai (requires ANTHROPIC_API_KEY env var)
 - No auth -- fully public
 
 ## Architecture
 - `app/page.tsx` -- state machine (input, loading, result, error)
 - `app/api/explain/route.ts` -- Claude API route, server-side
-- `components/InputScreen.tsx` -- input form with two code textareas
-- `components/ResultLayout.tsx` -- three-panel wrapper
-- `components/FilePanel.tsx` -- left panel (file tree and metadata)
+- `components/InputScreen.tsx` -- input form with two code textareas and filename field
+- `components/ResultLayout.tsx` -- two-panel wrapper: CodePanel (left) + ReasoningPanel (right)
+- `components/FilePanel.tsx` -- EXISTS but NOT rendered. Removed from ResultLayout on 2026-04-04.
 - `components/CodePanel.tsx` -- center panel (code, ghost suggestion, Accept/Discard)
-- `components/ReasoningPanel.tsx` -- right panel (five AI reasoning sections)
+- `components/ReasoningPanel.tsx` -- right panel (five AI reasoning sections, width 400px)
 - `types/index.ts` -- shared TypeScript types
 - `app/globals.css` -- CSS custom properties for color palette
 
@@ -43,80 +43,163 @@ This applies to every Claude session touching this project, not just the CTO cha
 
 ---
 
-## ACTIVE TASK: Redesign result screen layout
-
-### Context
-The result screen currently has three panels: FilePanel (left, 220px) | CodePanel (center, flex) | ReasoningPanel (right, 320px). The FilePanel is decorative -- it shows a fake file explorer that wastes space and doesn't add value in a browser context. The ReasoningPanel (the actual product) is too narrow. The confidence score doesn't visually dominate enough.
-
-The case study page on harshit.ai shows Figma mockup screenshots of what this product should look like. The narrative is: research > design > working prototype. The closer this UI matches the design intent, the stronger the portfolio story.
-
-### What to do
-
-#### Step 1: Remove FilePanel from the result layout
-In `components/ResultLayout.tsx`:
-- Remove the `<FilePanel>` component from the three-panel body
-- Remove the FilePanel import
-- The layout should now be two panels: CodePanel (left) | ReasoningPanel (right)
-
-Do NOT delete `components/FilePanel.tsx` -- just stop rendering it.
-
-#### Step 2: Rebalance the two-panel layout
-In `components/ResultLayout.tsx`:
-- The body `<div>` currently has `<FilePanel>`, `<CodePanel>`, `<ReasoningPanel>` in a flex row
-- After removing FilePanel, adjust widths so:
-  - CodePanel: takes roughly 55% of space (flex-1, unchanged -- it already uses flex-1)
-  - ReasoningPanel: takes roughly 45% of space -- widen from current 320px max to ~420px
-  
-In `components/ReasoningPanel.tsx`:
-- Change width from `320px` to `400px`
-- Change minWidth from `280px` to `360px`  
-- Change maxWidth from `360px` to `440px`
-
-#### Step 3: Make confidence score visually dominant
-In `components/ReasoningPanel.tsx`, the confidence score section (the `mx-4 mt-4 mb-2 rounded-lg p-4` div):
-- Increase the score font size from `text-3xl` to `text-5xl`
-- Add `text-center` to the confidence container so the score is centered
-- Make the progress bar thicker: change `h-1.5` to `h-2.5`
-- Add subtle padding increase: change `p-4` to `p-6` on the confidence container
-- The confidence score should be the first thing someone sees when the result loads
-
-#### Step 4: Improve ReasoningPanel section spacing
-In `components/ReasoningPanel.tsx`:
-- The sections feel cramped at the narrower width. Now that we have more space:
-- Change the section body text from `text-sm` to `text-[13px]` (BulletList items) -- actually keep as is, the wider panel will help
-- Add more vertical breathing room: change `gap-0` on the sections container to `gap-1`
-- Add `mt-2` to the confidence container (currently `mt-4`) -- actually keep `mt-4`, just widen
-
-#### Step 5: Verify the input screen is untouched
-- `components/InputScreen.tsx` should NOT be modified
-- The input screen is functional and acceptable as-is
-
-### Files to modify
-- MODIFY: `components/ResultLayout.tsx` -- remove FilePanel, keep two-panel layout
-- MODIFY: `components/ReasoningPanel.tsx` -- widen panel, enlarge confidence score
-- DO NOT MODIFY: `components/InputScreen.tsx`
-- DO NOT MODIFY: `components/FilePanel.tsx` (keep file, just don't render it)
-- DO NOT MODIFY: `app/api/explain/route.ts`
-
-### Acceptance Criteria
-- [ ] Result screen shows two panels only: CodePanel (left) + ReasoningPanel (right)
-- [ ] No FilePanel / file explorer visible
-- [ ] ReasoningPanel is wider (~400-440px)
-- [ ] Confidence score is large (text-5xl) and visually dominant
-- [ ] Progress bar is thicker (h-2.5)
-- [ ] Code panel still shows original code, ghost suggestion, Accept/Discard buttons
-- [ ] All five reasoning sections still render (Why, Assumptions, Impact, Verification)
-- [ ] Input screen is unchanged
-- [ ] `npm run build` passes with no errors
-- [ ] Top header bar and bottom status bar still render correctly
-
----
-
 ## Known Issues and Backlog
 - No syntax highlighting in code panels (intentional for prototype speed)
 - No mobile layout for two-panel result view (input screen works on mobile)
-- Confidence score is LLM pattern matching only, not grounded in static analysis
-- Custom domain: configure explainable.harshit.ai in Vercel
+- Confidence score is LLM pattern matching only, not grounded in static analysis -- documented as known limitation on case study page
 
 ## Project Log
-[Technical decisions appended here automatically via claude-code-bridge.]
+
+### 2026-03-14 -- Initial build
+Built and deployed full Next.js app. Three-panel layout: FilePanel (left) + CodePanel (center) + ReasoningPanel (right). Claude API route server-side. Input screen with two textareas and filename field. Five reasoning sections always rendered. Deployed to Vercel.
+
+### 2026-04-04 -- UI redesign shipped
+Removed FilePanel from result layout. Now two panels: CodePanel + ReasoningPanel. ReasoningPanel widened to 400px (was 320px). Confidence score enlarged to text-5xl (was text-3xl). Progress bar thickened to h-2.5. Custom domain trust.harshit.ai live.
+
+---
+
+## ACTIVE TASK: Add Floating Case Study Bubble
+
+### Context
+Every sub-site in the portfolio needs a floating popup (bottom-right corner) linking back to its case study on harshit.ai. This helps hiring managers and recruiters discover the product thinking behind the tool. Same pattern as Eval Studio's bubble.
+
+### What to Build
+Create a new component `components/CaseStudyBubble.tsx` and render it in `app/page.tsx`.
+
+### Component Spec: CaseStudyBubble.tsx
+
+```tsx
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+
+export default function CaseStudyBubble() {
+  const [visible, setVisible] = useState(false);
+  const reappearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleShow = useCallback((delay: number) => {
+    if (reappearTimer.current) clearTimeout(reappearTimer.current);
+    reappearTimer.current = setTimeout(() => setVisible(true), delay);
+  }, []);
+
+  useEffect(() => {
+    scheduleShow(3000);
+    return () => {
+      if (reappearTimer.current) clearTimeout(reappearTimer.current);
+    };
+  }, [scheduleShow]);
+
+  function hide() {
+    setVisible(false);
+    scheduleShow(7000);
+  }
+
+  function handleDismiss(e: React.MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    hide();
+  }
+
+  if (!visible) return null;
+
+  return (
+    <a
+      href="https://harshit.ai/work/explainable-ai"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="fixed bottom-6 right-6 z-[9999] flex items-center gap-[10px] rounded-2xl border px-4 py-3 no-underline transition-all hover:brightness-110"
+      style={{
+        background: "rgba(10,10,10,0.95)",
+        borderColor: "rgba(255,255,255,0.1)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+        animation: "bubbleIn 0.4s ease-out",
+      }}
+    >
+      <div
+        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
+        style={{ background: "rgba(99,102,241,0.1)" }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent, #6366f1)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </svg>
+      </div>
+      <div>
+        <p className="text-[13px] font-medium" style={{ color: "#e2e8f0", margin: 0 }}>
+          See the product thinking behind this
+        </p>
+        <p className="text-[11px]" style={{ color: "#94a3b8", margin: 0 }}>
+          Research, design, and prototype process
+        </p>
+      </div>
+      <button
+        onClick={handleDismiss}
+        className="ml-1 bg-transparent border-none cursor-pointer text-[16px] leading-none p-0"
+        style={{ color: "#64748b" }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#e2e8f0")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
+        aria-label="Dismiss"
+      >
+        &#215;
+      </button>
+    </a>
+  );
+}
+```
+
+### Add the bubbleIn keyframe animation
+In `app/globals.css`, add at the bottom (only if not already present):
+```css
+@keyframes bubbleIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+```
+
+### Wire it into the page
+In `app/page.tsx`:
+
+1. Add import at top: `import CaseStudyBubble from "@/components/CaseStudyBubble";`
+
+2. The page has multiple return paths (loading, error, result, input). The bubble must show on ALL screens. For each return block, wrap in a fragment and add the bubble:
+
+   ```tsx
+   // Example for loading phase:
+   if (state.phase === "loading") {
+     return (
+       <>
+         <div className="min-h-screen flex flex-col items-center justify-center gap-4" ...>
+           ...
+         </div>
+         <CaseStudyBubble />
+       </>
+     );
+   }
+   ```
+
+   Do the same for error, result, and input returns.
+
+### Mobile Responsiveness
+Add to globals.css alongside the keyframe:
+```css
+@media (max-width: 639px) {
+  .fixed.bottom-6.right-6 {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+  }
+}
+```
+
+### Acceptance Criteria
+- [ ] Bubble appears bottom-right after 3 seconds on all screens (input, loading, result, error)
+- [ ] Clicking the bubble opens https://harshit.ai/work/explainable-ai in a new tab
+- [ ] Clicking x dismisses it; it reappears after 7 seconds
+- [ ] Consistent with the dark purple/indigo theme of the app
+- [ ] Works on mobile
+- [ ] No em dashes in any copy
+
+### Files to Touch
+- CREATE: `components/CaseStudyBubble.tsx`
+- EDIT: `app/page.tsx` (import + render in all return paths)
+- EDIT: `app/globals.css` (keyframe + mobile media query)

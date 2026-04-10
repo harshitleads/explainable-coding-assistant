@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { AppState, UserInput } from "@/types";
 import InputScreen from "@/components/InputScreen";
 import ResultLayout from "@/components/ResultLayout";
+import CaseStudyBubble from "@/components/CaseStudyBubble";
 
 // App state machine:
 //   input -> loading -> result
@@ -53,70 +54,82 @@ export default function Home() {
   // Loading phase — full-screen spinner while Claude processes
   if (state.phase === "loading") {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center gap-4"
-        style={{ background: "var(--bg-base)" }}
-      >
-        <LoadingSpinner />
-        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-          Analyzing suggestion...
-        </p>
-        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          {state.input.filename}
-        </p>
-      </div>
+      <>
+        <div
+          className="min-h-screen flex flex-col items-center justify-center gap-4"
+          style={{ background: "var(--bg-base)" }}
+        >
+          <LoadingSpinner />
+          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+            Analyzing suggestion...
+          </p>
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            {state.input.filename}
+          </p>
+        </div>
+        <CaseStudyBubble />
+      </>
     );
   }
 
   // Error phase — friendly message with retry option
   if (state.phase === "error") {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center gap-4"
-        style={{ background: "var(--bg-base)" }}
-      >
+      <>
         <div
-          className="w-full max-w-md rounded-xl border p-6 text-center"
-          style={{ background: "var(--bg-panel)", borderColor: "var(--border)" }}
+          className="min-h-screen flex flex-col items-center justify-center gap-4"
+          style={{ background: "var(--bg-base)" }}
         >
-          <div className="mb-3 flex justify-center">
-            <ErrorIcon />
-          </div>
-          <h2 className="text-base font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
-            Analysis failed
-          </h2>
-          <p className="text-sm mb-5" style={{ color: "var(--text-secondary)" }}>
-            {state.message}
-          </p>
-          <button
-            onClick={handleReset}
-            className="px-5 py-2 rounded-md text-sm font-medium"
-            style={{ background: "var(--accent)", color: "#fff", border: "none", cursor: "pointer" }}
+          <div
+            className="w-full max-w-md rounded-xl border p-6 text-center"
+            style={{ background: "var(--bg-panel)", borderColor: "var(--border)" }}
           >
-            Try again
-          </button>
+            <div className="mb-3 flex justify-center">
+              <ErrorIcon />
+            </div>
+            <h2 className="text-base font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
+              Analysis failed
+            </h2>
+            <p className="text-sm mb-5" style={{ color: "var(--text-secondary)" }}>
+              {state.message}
+            </p>
+            <button
+              onClick={handleReset}
+              className="px-5 py-2 rounded-md text-sm font-medium"
+              style={{ background: "var(--accent)", color: "#fff", border: "none", cursor: "pointer" }}
+            >
+              Try again
+            </button>
+          </div>
         </div>
-      </div>
+        <CaseStudyBubble />
+      </>
     );
   }
 
   // Result phase — three-panel layout
   if (state.phase === "result") {
     return (
-      <ResultLayout
-        input={state.input}
-        analysis={state.analysis}
-        onReset={handleReset}
-      />
+      <>
+        <ResultLayout
+          input={state.input}
+          analysis={state.analysis}
+          onReset={handleReset}
+        />
+        <CaseStudyBubble />
+      </>
     );
   }
 
   // Input phase (default)
   return (
-    <InputScreen
-      onSubmit={handleAnalyze}
-      isLoading={false}
-    />
+    <>
+      <InputScreen
+        onSubmit={handleAnalyze}
+        isLoading={false}
+      />
+      <CaseStudyBubble />
+    </>
   );
 }
 
